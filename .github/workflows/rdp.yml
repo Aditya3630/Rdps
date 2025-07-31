@@ -1,0 +1,26 @@
+name: Free RDP - 6 Hours
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+    - name: Setup RDP Access
+      run: |
+        net user runneradmin MyPassword123 /add
+        net localgroup administrators runneradmin /add
+        powershell -Command "Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0"
+        powershell -Command "Enable-NetFirewallRule -DisplayGroup 'Remote Desktop'"
+
+    - name: Show IP Address
+      run: |
+        echo =====================================
+        echo RDP Username: runneradmin
+        echo Password: MyPassword123
+        echo External IP: 
+        curl ifconfig.me
+        echo =====================================
+        timeout /t 21600
